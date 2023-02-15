@@ -1,5 +1,4 @@
-def get_url(options, use_case, path) -> str:
-    return "{}/{}/{}/{}".format(options["server"], use_case, options["version"], path)
+from typing import Dict
 
 
 def create_dict_from_kwargs(**kwargs):
@@ -8,3 +7,24 @@ def create_dict_from_kwargs(**kwargs):
         if value is not None:
             new_dict[key] = value
     return new_dict
+
+
+def dict2obj(raw: Dict, top: object = None):
+    if top is None:
+        top = type("PropertyHolder", (object,), raw)
+
+    seqs = tuple, list, set, frozenset
+    for i, j in raw.items():
+        if isinstance(j, dict):
+            setattr(top, i, dict2obj(j))
+        elif isinstance(j, seqs):
+            seq_list = []
+            for seq_elem in j:
+                if isinstance(seq_elem, dict):
+                    seq_list.append(dict2obj(seq_elem))
+                else:
+                    seq_list.append(seq_elem)
+            setattr(top, i, seq_list)
+        else:
+            setattr(top, i, j)
+    return top
