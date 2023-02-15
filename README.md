@@ -10,7 +10,7 @@ Umbrella API is a Python wrapper for the [Cisco Umbrella API](https://developer.
 
 You can install the Umbrella API package using pip:
 
-`pip install git+https://github.com/thegrumpyape/umbrella_api.git@master`
+`pip install git+https://github.com/thegrumpyape/umbrella_api.git@main`
 
 ### Usage
 
