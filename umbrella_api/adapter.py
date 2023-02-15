@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Dict
+from typing import Dict, List
 from requests import Session
 from umbrella_api.exceptions import raise_on_error
 
@@ -80,3 +80,37 @@ class RestAdapter:
             ep_params=ep_params,
             data=data,
         )
+
+    def page(
+        self, use_case: str, path: str, page_size: int = 100, params: dict = None
+    ) -> List:
+        results = []
+        page = 1
+
+        if params is None:
+            params = {}
+
+        while True:
+            params["page"] = page
+            params["limit"] = page_size
+            r = self.get(use_case=use_case, path=path, ep_params=params)
+            results.extend(r.data["data"])
+            if not r.data["data"]:
+                break
+            page += 1
+        return results
+
+    def chunk(
+        self,
+        http_method: str,
+        use_case: str,
+        path: str,
+        data: list,
+        chunk_size: int = 500,
+    ) -> None:
+        for i in range(0, len(data), chunk_size):
+            chunk = data[i : i + chunk_size]
+            r = self.do(
+                http_method=http_method, use_case=use_case, path=path, data=chunk
+            )
+        return r.data["data"]

@@ -1,7 +1,7 @@
 from typing import Dict
 
 
-def create_dict_from_kwargs(**kwargs):
+def kwargs2dict(**kwargs):
     new_dict = {}
     for key, value in kwargs.items():
         if value is not None:
