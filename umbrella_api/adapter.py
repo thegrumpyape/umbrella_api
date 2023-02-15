@@ -2,8 +2,14 @@ import json
 import logging
 from typing import Dict
 from requests import Session
-from umbrella_api.resources import Result
 from umbrella_api.exceptions import raise_on_error
+
+
+class Result:
+    def __init__(self, status_code: int, message: str = "", data=None):
+        self.status_code = int(status_code)
+        self.message = str(message)
+        self.data = data
 
 
 class RestAdapter:
@@ -38,14 +44,14 @@ class RestAdapter:
         raise_on_error(r)
 
     def get(self, use_case: str, path: str, ep_params: Dict = None) -> Result:
-        return self._do(
+        return self.do(
             http_method="GET", use_case=use_case, path=path, ep_params=ep_params
         )
 
     def post(
         self, use_case: str, path: str, ep_params: Dict = None, data: Dict = None
     ) -> Result:
-        return self._do(
+        return self.do(
             http_method="POST",
             use_case=use_case,
             path=path,
@@ -56,7 +62,7 @@ class RestAdapter:
     def delete(
         self, use_case: str, path: str, ep_params: Dict = None, data: Dict = None
     ) -> Result:
-        return self._do(
+        return self.do(
             http_method="DELETE",
             use_case=use_case,
             path=path,
@@ -67,7 +73,7 @@ class RestAdapter:
     def patch(
         self, use_case: str, path: str, ep_params: Dict = None, data: Dict = None
     ) -> Result:
-        return self._do(
+        return self.do(
             http_method="PATCH",
             use_case=use_case,
             path=path,

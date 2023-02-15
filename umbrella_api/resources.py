@@ -4,13 +4,6 @@ from umbrella_api.utils import create_dict_from_kwargs, dict2obj
 from umbrella_api.adapter import RestAdapter
 
 
-class Result:
-    def __init__(self, status_code: int, message: str = "", data=None):
-        self.status_code = int(status_code)
-        self.message = str(message)
-        self.data = data
-
-
 class Resource:
     def __init__(self, raw: Dict, adapter: RestAdapter):
         self._adapter = adapter

@@ -1,15 +1,11 @@
 import json
 import logging
 from typing import List
-
 from oauthlib.oauth2 import BackendApplicationClient
-from oauthlib.oauth2 import TokenExpiredError
 from requests_oauthlib import OAuth2Session
 from requests.auth import HTTPBasicAuth
-
-from umbrella_api.exceptions import raise_on_error
 from umbrella_api.resources import DestinationList, Destination
-from umbrella_api.utils import get_url, create_dict_from_kwargs
+from umbrella_api.utils import create_dict_from_kwargs
 from umbrella_api.adapter import RestAdapter
 
 
@@ -25,7 +21,7 @@ class UmbrellaAPI:
     def destination_lists(self, expand: bool = False) -> List[DestinationList]:
         r_json = self._page("policies", "destinationlists")
         destination_lists = [
-            DestinationList(raw_dl, self._options, self._session) for raw_dl in r_json
+            DestinationList(raw_dl, self._adapter) for raw_dl in r_json
         ]
         if expand:
             for destination_list in destination_lists:
@@ -37,7 +33,7 @@ class UmbrellaAPI:
 
     def destination_list(self, id: int, expand: bool = False) -> DestinationList:
         r = self._adapter.get("policies", f"destinationlists/{id}")
-        dl = DestinationList(r.data["data"], self._options, self._session)
+        dl = DestinationList(r.data["data"], self._adapter)
         self._logger.info(
             msg=f"message=loaded destination list, id={dl.id}, name={dl.name}, access={dl.access}"
         )
@@ -56,7 +52,7 @@ class UmbrellaAPI:
     ) -> DestinationList:
         data = create_dict_from_kwargs(name=name, access=access, isGlobal=is_global)
         r = self._adapter.post("policies", "destinationlists", data=data)
-        dl = DestinationList(r.data, self._options, self._session)
+        dl = DestinationList(r.data, self._adapter)
         self._logger.info(
             msg=f"message=created destination list, id={dl.id}, name={dl.name}, access={dl.access}"
         )
@@ -65,7 +61,7 @@ class UmbrellaAPI:
     def destinations(self, dl_id: int) -> List[Destination]:
         r_json = self._page("policies", f"destinationlists/{dl_id}/destinations")
         destinations = [
-            DestinationList(raw_dest, self._options, self._session)
+            Destination(raw_dest, self._adapter)
             for raw_dest in r_json
         ]
         return destinations
@@ -77,7 +73,7 @@ class UmbrellaAPI:
         self._session = OAuth2Session(client=client)
         self._session.fetch_token(token_url=url, auth=auth)
 
-    def _page(self, use_case:str, path:str, limit: int = 100, params: dict = None):
+    def _page(self, use_case: str, path: str, limit: int = 100, params: dict = None):
         results = []
         page = 1
 
