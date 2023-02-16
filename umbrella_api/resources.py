@@ -62,7 +62,7 @@ class DestinationList(Resource):
             chunk_size=500,
         )
         self._adapter._logger.info(
-            msg=f"added {len(destinations)} destinations, id={self.id}, name={self.name}, access={self.access}"
+            msg=f"message=added {len(destinations)} destinations, id={self.id}, name={self.name}, access={self.access}"
         )
 
     def delete_destinations(self, destination_ids: list) -> None:
