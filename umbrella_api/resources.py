@@ -23,6 +23,7 @@ class Destination(Resource):
 class DestinationList(Resource):
     def __init__(self, raw, adapter: RestAdapter):
         Resource.__init__(self, raw, adapter)
+        self.destinations = []
 
     def update(self, name: str) -> None:
         validate_input(name, str)
@@ -32,15 +33,15 @@ class DestinationList(Resource):
         )
         self._parse_raw(r.data["data"])
 
-    def destinations(self) -> List[Destination]:
+    def get_destinations(self) -> List[Destination]:
         r_json = self._adapter.page(
             "policies", f"destinationlists/{self.id}/destinations"
         )
-        destinations = [Destination(raw_dest, self._adapter) for raw_dest in r_json]
+        self.destinations += [Destination(raw_dest, self._adapter) for raw_dest in r_json]
         self._adapter._logger.info(
-            msg=f"message=loaded {len(destinations)} destinations, id={self.id}, name={self.name}, access={self.access}"
+            msg=f"message=loaded {len(self.destinations)} destinations, id={self.id}, name={self.name}, access={self.access}"
         )
-        return destinations
+        return self.destinations
 
     def add_destinations(
         self, destinations: list, type: str = None, comment: str = None
