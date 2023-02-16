@@ -1,3 +1,3 @@
 __author__ = "chrisdoucette15@gmai.com"
 
-from .client import UmbrellaAPI
+from .umbrella_api import UmbrellaAPI
