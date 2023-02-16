@@ -31,6 +31,9 @@ class DestinationList(Resource):
         r = self._adapter.patch(
             use_case="policies", path=f"destinationlists/{self.id}", data=data
         )
+        self._adapter._logger.info(
+            msg=f"message=Renamed destination_list to {name}, id={self.id}, name={self.name}, access={self.access}"
+        )
         self._parse_raw(r.data["data"])
 
     def get_destinations(self) -> List[Destination]:
@@ -58,6 +61,9 @@ class DestinationList(Resource):
             data=data,
             chunk_size=500,
         )
+        self._adapter._logger.info(
+            msg=f"added {len(destinations)} destinations, id={self.id}, name={self.name}, access={self.access}"
+        )
 
     def delete_destinations(self, destination_ids: list) -> None:
         validate_input(destination_ids, list)
@@ -67,4 +73,7 @@ class DestinationList(Resource):
             path=f"destinationlists/{self.id}/destinations/remove",
             data=destination_ids,
             chunk_size=500,
+        )
+        self._adapter._logger.info(
+            msg=f"message=deleted {len(destination_ids)} destinations, id={self.id}, name={self.name}, access={self.access}"
         )
